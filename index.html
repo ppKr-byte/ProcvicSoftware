@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Software – pracovní list</title>
+<style>
+:root{--bg:#f1eeff;--panel:#fff;--ink:#1b1340;--mute:#5d5683;--line:#d9d3f5;--ok:#12a150;--okbg:#dcf6e7;--bad:#e5383b;--badbg:#ffe3e3;
+--c0:#7c4dff;--c1:#ff5a5f;--c2:#00a896;--c3:#f59e0b}
+@media (prefers-color-scheme:dark){:root{--bg:#120d2b;--panel:#1e1745;--ink:#f1eeff;--mute:#aaa3d6;--line:#352c70;--okbg:#10382a;--badbg:#431a1e}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.5 "Trebuchet MS","Segoe UI",system-ui,sans-serif}
+header{position:relative;overflow:hidden;background:#241a5e;color:#fff;padding:34px 0 30px}
+.hin{max-width:1040px;margin:0 auto;padding:0 28px;position:relative;z-index:1}
+h1{font-size:2.8rem;line-height:1.05;margin:0 0 6px;letter-spacing:-.5px}
+header p{margin:0;color:#c9c0ff;font-size:1.1rem}
+.sh{position:absolute;opacity:.95}
+.s1{width:150px;height:150px;border-radius:50%;background:var(--c1);right:6%;top:-50px}
+.s2{width:90px;height:90px;background:var(--c3);right:20%;bottom:-30px;transform:rotate(18deg);border-radius:14px}
+.s3{width:60px;height:60px;border-radius:50%;background:var(--c2);right:2%;bottom:14px}
+.s4{width:0;height:0;border-left:40px solid transparent;border-right:40px solid transparent;border-bottom:70px solid var(--c0);right:30%;top:-10px;transform:rotate(-12deg)}
+main{max-width:1040px;margin:0 auto;padding:22px 28px 70px}
+nav{display:flex;gap:10px;margin-bottom:26px}
+nav button{flex:1;display:flex;align-items:center;gap:10px;padding:12px 16px;border:3px solid var(--line);background:var(--panel);color:var(--ink);border-radius:14px;font:inherit;font-weight:700;cursor:pointer;transition:transform .12s}
+nav button i{font-style:normal;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--tc);color:#fff;font-size:.95rem;flex:none}
+nav button:hover{transform:translateY(-3px)}
+nav button[aria-selected=true]{background:var(--tc);border-color:var(--tc);color:#fff}
+nav button[aria-selected=true] i{background:#fff;color:var(--tc)}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+section{display:none;--a:var(--c0)}section.on{display:block}
+section:nth-of-type(2){--a:var(--c1)}section:nth-of-type(3){--a:var(--c2)}section:nth-of-type(4){--a:var(--c3)}
+h2{font-size:2rem;margin:0 0 2px;color:var(--a)}
+.task{color:var(--mute);margin:0 0 16px}
+.bar{height:12px;background:var(--line);border-radius:99px;overflow:hidden;margin:0 0 6px}
+.bar b{display:block;height:100%;width:0;background:var(--a);border-radius:99px;transition:width .4s}
+.count{font-weight:700;margin:0 0 18px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.card{background:var(--panel);border:3px solid var(--line);border-left:10px solid var(--a);border-radius:14px;padding:14px 18px}
+.card.ok{border-color:var(--ok);background:var(--okbg);animation:pop .35s}
+.card.bad{border-color:var(--bad);background:var(--badbg)}
+@keyframes pop{40%{transform:scale(1.03)}}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.name{font-weight:800;font-size:1.15rem}
+.btns{display:flex;gap:8px}
+.btns button,.opt{padding:10px 16px;border:3px solid var(--line);background:var(--panel);color:var(--ink);border-radius:12px;font:inherit;font-weight:600;cursor:pointer;transition:transform .1s,border-color .1s}
+.btns button:hover:not(:disabled),.opt:hover:not(:disabled){border-color:var(--a);transform:translateY(-2px)}
+button:disabled{cursor:default}
+.pick{background:var(--ink)!important;color:var(--bg)!important;border-color:var(--ink)!important}
+.fb{margin:10px 0 0;font-size:.98rem}
+.fb b.g{color:var(--ok)}.fb b.r{color:var(--bad)}
+.q{font-weight:800;font-size:1.15rem;margin:0 0 12px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{display:flex;gap:10px;align-items:center;text-align:left;width:100%}
+.opt em{font-style:normal;display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--a);color:#fff;font-weight:800;flex:none}
+.opt.right{border-color:var(--ok);background:var(--okbg)}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.stack{display:grid;gap:14px}
+.lay{display:grid;grid-template-columns:260px 1fr;gap:26px;align-items:start}
+.pool{display:flex;flex-direction:column;gap:10px;min-height:80px;padding:14px;border:3px dashed var(--a);border-radius:14px;position:sticky;top:12px}
+.chip{padding:12px 16px;background:var(--a);color:#fff;border-radius:12px;font:inherit;font-weight:800;cursor:grab;user-select:none;border:0;font-size:1.05rem;text-align:left}
+.chip:hover{filter:brightness(1.1)}
+.chip.sel{outline:4px solid var(--ink)}
+.slot{display:flex;align-items:center;gap:14px;min-height:70px;padding:12px 16px;margin-bottom:10px;background:var(--panel);border:3px dashed var(--line);border-radius:14px}
+.slot.over{border-color:var(--a);background:var(--bg)}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--okbg)}
+.slot.bad{animation:sh .35s;border-color:var(--bad)}
+.slot .hint{flex:1}
+.slot .chip{cursor:default;background:var(--ok)}
+@keyframes sh{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.msg{min-height:1.7em;font-weight:700;margin:0 0 12px}
+.res{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.res .card{display:block;text-align:center}
+.res .card b{display:block;font-size:2rem;color:var(--a)}
+.big{font-size:3.2rem;font-weight:800;margin:0}
+.nxt{margin-top:20px;padding:12px 22px;border:0;background:var(--a);color:#fff;border-radius:12px;font:inherit;font-weight:800;font-size:1.05rem;cursor:pointer}
+.nxt:hover{filter:brightness(1.1)}
+</style>
+</head>
+<body>
+<header>
+<span class="sh s1"></span><span class="sh s2"></span><span class="sh s3"></span><span class="sh s4"></span>
+<div class="hin"><h1>Software</h1><p>Pracovní list. Každá aktivita ti hned řekne, jestli máš správně.</p></div>
+</header>
+<main>
+<nav id="nav" role="tablist"></nav>
+
+<section id="s0"><h2>Co je co?</h2>
+<p class="task">Vyber správnou odpověď. Po odpovědi uvidíš vysvětlení, tak si ho přečti.</p>
+<div class="bar"><b id="b0"></b></div><p class="count" id="c0"></p><div class="stack" id="l0"></div></section>
+
+<section id="s1"><h2>Třídění</h2>
+<p class="task">Je to aplikační, nebo systémový software? Využij, co sis zopakoval v předchozí aktivitě.</p>
+<div class="bar"><b id="b1"></b></div><p class="count" id="c1"></p><div class="grid" id="l1"></div></section>
+
+<section id="s2"><h2>Scénáře</h2>
+<p class="task">Co se stalo? Urči, která část softwaru je zodpovědná.</p>
+<div class="bar"><b id="b2"></b></div><p class="count" id="c2"></p><div class="stack" id="l2"></div></section>
+
+<section id="s3"><h2>Vrstvy počítače</h2>
+<p class="task">Přetáhni název vrstvy k jejímu popisu, nebo klikni na název a pak na popis.</p>
+<p class="msg" id="msg"></p>
+<div class="lay"><div class="pool" id="pool"></div><div id="slots"></div></div></section>
+
+<section id="s4"><h2>Výsledek</h2><div id="res"></div></section>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const tabs=["Co je co?","Třídění","Scénáře","Vrstvy","Výsledek"],cols=["--c0","--c1","--c2","--c3","--c0"];
+const sc=[[0,0,0],[0,0,0],[0,0,0],[0,0,5]];
+const nav=$("#nav");
+tabs.forEach((t,i)=>{const b=document.createElement("button");b.innerHTML=`<i>${i<4?i+1:"✓"}</i>${t}`;b.style.setProperty("--tc",`var(${cols[i]})`);b.setAttribute("role","tab");b.onclick=()=>go(i);nav.appendChild(b)});
+function go(i){document.querySelectorAll("main>section").forEach((s,k)=>s.classList.toggle("on",k===i));
+ [...nav.children].forEach((b,k)=>b.setAttribute("aria-selected",k===i));
+ if(i===4)results();window.scrollTo(0,0)}
+function fb(card,good,text){card.classList.add(good?"ok":"bad");
+ let p=card.querySelector(".fb");if(!p){p=document.createElement("p");p.className="fb";card.appendChild(p)}
+ p.innerHTML=`<b class="${good?"g":"r"}">${good?"Správně.":"Ne tak docela."}</b> ${text}`}
+function counter(k){const [g,a,t]=sc[k];$("#c"+k).textContent=`Správně: ${g} z ${a} zodpovězených (celkem ${t})`;$("#b"+k).style.width=(a/t*100)+"%"}
+function nextBtn(k){const b=document.createElement("button");b.className="nxt";b.textContent="Pokračovat na další aktivitu";b.onclick=()=>go(k+1);$("#s"+k).appendChild(b)}
+
+/* Třídění (záložka 1) */
+const sortItems=[
+["Word","A","Běžný program pro psaní dokumentů, uživatel s ním pracuje přímo."],
+["Chrome","A","Prohlížeč je aplikace, kterou používáš ke svým úkolům."],
+["Windows","S","Operační systém stará se o chod celého počítače."],
+["BIOS/UEFI","S","Spouští se před operačním systémem, kontroluje hardware (POST) a pak OS zapne."],
+["Ovladač grafické karty","S","Říká operačnímu systému, jak grafickou kartu používat. Bez něj by ji OS neuměl využít."],
+["Minecraft","A","Hra je aplikační software."],
+["Android","S","Je to operační systém telefonů a tabletů."],
+["Antivir","A","Hraniční případ: chrání systém, ale instaluješ ho jako běžný program, proto ho řadíme mezi aplikace."],
+["Linux","S","Linuxové distribuce jsou operační systémy."],
+["Kalkulačka","A","Běžný program pro uživatele."],
+["Ovladač tiskárny","S","Zprostředkovává komunikaci mezi OS a tiskárnou."],
+["Inkscape","A","Grafický editor, tedy aplikace."],
+["macOS","S","Operační systém počítačů Apple."],
+["Roblox","A","Hra a herní platforma, aplikační software."]];
+sc[1][2]=sortItems.length;
+shuffle(sortItems).forEach(([n,t,e])=>{
+ const c=document.createElement("div");c.className="card";
+ c.innerHTML=`<div class="row"><span class="name">${n}</span><span class="btns"><button>Aplikační</button><button>Systémový</button></span></div>`;
+ const bs=c.querySelectorAll("button");
+ bs.forEach((b,i)=>b.onclick=()=>{const guess=i?"S":"A";bs.forEach(x=>x.disabled=true);b.classList.add("pick");
+  sc[1][1]++;const g=guess===t;if(g)sc[1][0]++;
+  fb(c,g,(g?"":`${n} je ${t==="A"?"aplikační":"systémový"} software. `)+e);counter(1);
+  if(sc[1][1]===sortItems.length)nextBtn(1)});
+ $("#l1").appendChild(c)});
+counter(1);
+
+/* Kvízy (záložky 0 a 2): správná odpověď je vždy o[0], pořadí se míchá */
+function quiz(k,items){
+ sc[k][2]=items.length;
+ items.forEach(it=>{
+  const c=document.createElement("div");c.className="card";
+  const opts=shuffle(it.o.map((t,i)=>({t,i})));
+  c.innerHTML=`<p class="q">${it.q}</p><div class="opts"></div>`;
+  const box=c.querySelector(".opts");
+  opts.forEach((o,n)=>{const b=document.createElement("button");b.className="opt";b.innerHTML=`<em>${"ABCD"[n]}</em><span>${o.t}</span>`;
+   b.onclick=()=>{const bs=[...box.children];bs.forEach(x=>x.disabled=true);
+    const g=o.i===0;sc[k][1]++;if(g)sc[k][0]++;
+    b.classList.add(g?"right":"wrong");
+    if(!g)bs.forEach((x,j)=>{if(opts[j].i===0)x.classList.add("right")});
+    fb(c,g,it.e);counter(k);
+    if(sc[k][1]===items.length)nextBtn(k)};
+   box.appendChild(b)});
+  $("#l"+k).appendChild(c)});
+ counter(k)}
+quiz(0,[
+{q:"Fyzické části počítače, na které si můžeš sáhnout (procesor, disk, klávesnice), jsou…",o:["hardware","software","ovladače","aplikace"],e:"Hardware (HW) jsou fyzické části počítače. Software (SW) jsou programy a data."},
+{q:"Který druh softwaru používáš přímo ke své práci nebo zábavě, například Word, prohlížeč nebo hry?",o:["Aplikační software","Systémový software","Hardware","Firmware paměti"],e:"Aplikační software jsou běžné programy uživatele."},
+{q:"Který druh softwaru se stará o chod počítače, aby aplikace vůbec mohly běžet?",o:["Systémový software","Aplikační software","Textový editor","Herní software"],e:"Systémový software zajišťuje funkčnost počítače a pracuje většinou v pozadí."},
+{q:"Co patří mezi systémový software?",o:["Operační systém a ovladače hardwaru","Word a Chrome","Hry a Inkscape","Klávesnice a myš"],e:"Systémový software je například operační systém, ovladače a BIOS/UEFI. Word, Chrome a hry jsou aplikace, klávesnice a myš jsou hardware."},
+{q:"Který software po zapnutí kontroluje, jestli je všechen hardware v pořádku?",o:["BIOS/UEFI","Ovladač","Word","Prohlížeč"],e:"BIOS/UEFI provádí test POST a pak spustí operační systém."},
+{q:"Co je POST?",o:["Test hardwaru po zapnutí počítače","Typ operačního systému","Poštovní program","Funkce prohlížeče"],e:"Power On Self Test kontroluje hardware ještě před startem OS."},
+{q:"Čím se UEFI liší od staršího BIOS?",o:["Je modernější a umí víc funkcí, například Secure Boot","Je to hra","Je to ovladač tiskárny","Je to totéž jako Windows"],e:"UEFI je moderní nástupce BIOS."},
+{q:"Co dělá operační systém?",o:["Spravuje procesor, paměť, soubory a zařízení a vytváří uživatelské rozhraní","Pouze kontroluje hardware při startu","Slouží k psaní textu","Pouze ovládá tiskárnu"],e:"OS je most mezi hardwarem, aplikacemi a uživatelem."},
+{q:"Co je GUI?",o:["Grafické uživatelské rozhraní: okna, ikony a myš","Příkazová řádka bez obrázků","Typ procesoru","Typ ovladače"],e:"OS nabízí buď grafické rozhraní (GUI), nebo příkazovou řádku."},
+{q:"Který z těchto programů je operační systém?",o:["Android","Chrome","Word","Inkscape"],e:"Android je operační systém. Ostatní jsou aplikace."},
+{q:"Co je ovladač (driver)?",o:["Software, který říká OS, jak používat konkrétní hardware","Osoba, která opravuje počítače","Část hardwaru na základní desce","Program na úpravu fotek"],e:"Bez ovladače by OS nevěděl, jak s daným hardwarem komunikovat."},
+{q:"Co se stane, když OS nemá ovladač pro nějaké zařízení?",o:["OS zařízení nemůže správně používat","Nic, zařízení funguje samo","Počítač se sám opraví","BIOS ovladač doplní"],e:"Ovladač určuje, jak má OS hardware používat. Některé si OS umí nainstalovat sám."}]);
+quiz(2,[
+{q:"Zapneš počítač. Ještě před startem Windows se objeví chyba testu POST. Která část softwaru to hlásí?",o:["BIOS/UEFI","Aplikace","Ovladač tiskárny","Prohlížeč"],e:"POST provádí BIOS/UEFI před spuštěním OS."},
+{q:"Připojíš novou tiskárnu, ale počítač ji nedokáže správně používat. Co nejspíš chybí?",o:["Ovladač","BIOS","Word","Operační systém"],e:"Ovladač určuje, jak má OS s tiskárnou komunikovat."},
+{q:"Word se zasekne a nereaguje, ostatní programy běží normálně. Kde je problém?",o:["V aplikaci","V BIOSu","V ovladači grafiky","V základní desce"],e:"Když jediný program přestane reagovat, je to problém dané aplikace, ne systému."},
+{q:"Po zapnutí PC projde test hardwaru, ale není co spustit. Jaká část chybí?",o:["Operační systém","Aplikace Word","Ovladač myši","Antivir"],e:"BIOS/UEFI hardware zkontroluje, ale bez OS nemá co zapnout."}]);
+
+/* Vrstvy (záložka 3) */
+const layers=[
+["Uživatel","Ovládáš počítač myší a klávesnicí a díváš se na obrazovku."],
+["Aplikace","Word, Chrome, hry a další programy, se kterými pracuješ."],
+["Operační systém","Přiděluje procesor a paměť, spravuje soubory a zařízení."],
+["Ovladače","Překládají příkazy OS pro konkrétní zařízení."],
+["Hardware","Procesor, RAM, disk, grafická karta a další fyzické součástky."]];
+let sel=null,placed=0,mist=0;
+const pool=$("#pool"),slots=$("#slots");
+function place(id,i){
+ const chip=document.querySelector(`[data-id="${id}"]`);if(!chip)return;
+ const slot=slots.children[i];if(slot.classList.contains("ok"))return;
+ if(+id===i){slot.classList.remove("bad");slot.classList.add("ok");slot.querySelector(".hint").after(chip);chip.draggable=false;chip.classList.remove("sel");
+  placed++;sel=null;$("#msg").textContent=`Správně: ${layers[i][0]}.`;
+  if(placed===5){sc[3][0]=5-Math.min(mist,5);sc[3][1]=5;$("#msg").textContent=`Hotovo. Počet chybných pokusů: ${mist}.`;nextBtn(3)}}
+ else{mist++;slot.classList.remove("bad");void slot.offsetWidth;slot.classList.add("bad");
+  $("#msg").textContent="To sem nepatří. Přečti si popis vrstvy znovu."}}
+shuffle(layers.map((l,i)=>i)).forEach(i=>{
+ const c=document.createElement("button");c.className="chip";c.textContent=layers[i][0];c.draggable=true;c.dataset.id=i;
+ c.ondragstart=e=>e.dataTransfer.setData("text",i);
+ c.onclick=()=>{document.querySelectorAll(".chip").forEach(x=>x.classList.remove("sel"));sel=i;c.classList.add("sel")};
+ pool.appendChild(c)});
+layers.forEach((l,i)=>{
+ const s=document.createElement("div");s.className="slot";s.innerHTML=`<span class="hint">${l[1]}</span>`;
+ s.ondragover=e=>{e.preventDefault();s.classList.add("over")};
+ s.ondragleave=()=>s.classList.remove("over");
+ s.ondrop=e=>{e.preventDefault();s.classList.remove("over");place(e.dataTransfer.getData("text"),i)};
+ s.onclick=()=>{if(sel!==null)place(sel,i)};
+ slots.appendChild(s)});
+
+/* Výsledek */
+function results(){
+ const names=["Co je co?","Třídění","Scénáře","Vrstvy"];
+ const done=sc.every(s=>s[1]>=s[2]);
+ const tot=sc.reduce((a,s)=>a+s[0],0),max=sc.reduce((a,s)=>a+s[2],0);
+ $("#res").innerHTML=`<div class="res">${names.map((n,k)=>`<div class="card" style="--a:var(${cols[k]})"><span>${n}</span><b>${sc[k][0]} / ${sc[k][2]}</b></div>`).join("")}</div>
+ <p class="big">${tot} / ${max}</p>
+ <p>${done?"Všechno hotovo.":"Některé aktivity ještě nemáš dokončené. Vrať se k nim přes záložky nahoře."}</p>`}
+go(0);
+</script>
+</body>
+</html>
